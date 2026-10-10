@@ -1,0 +1,35 @@
+{
+  "name": "world-agent-wallet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP wallet gateway with shared budgets, human approval, World ID and x402 adapters",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/main.mjs",
+    "setup": "node --env-file-if-exists=.env scripts/setup.mjs",
+    "mcp": "node src/mcp.mjs",
+    "demo": "node scripts/demo.mjs",
+    "test": "node --test test/*.test.mjs",
+    "build": "esbuild web/world-id.js --bundle --format=esm --outfile=public/world-id.bundle.js",
+    "check": "node scripts/check.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "@worldcoin/agentkit": "0.2.1",
+    "@worldcoin/idkit-core": "4.4.0",
+    "@x402/core": "2.28.0",
+    "@x402/evm": "2.28.0",
+    "undici": "7.30.0",
+    "viem": "2.57.4",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "prettier": "3.9.10"
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+.local*/
+.env
+.env.*
+!.env.example
+public/world-id.bundle.js
+public/world-id.bundle.js.map
+coverage/
+*.sqlite*
+*.log
+test-results/
+/services.live.json

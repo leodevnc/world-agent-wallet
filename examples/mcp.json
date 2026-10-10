@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "world-agent-wallet": {
+      "command": "node",
+      "args": ["/absolute/path/world-agent-wallet/src/mcp.mjs"],
+      "env": {
+        "WALLET_GATEWAY_URL": "http://127.0.0.1:8787",
+        "WALLET_AGENT_FILE": "/absolute/path/world-agent-wallet/.local/agent-research.json"
+      }
+    }
+  }
+}

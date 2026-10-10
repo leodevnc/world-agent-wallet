@@ -1,0 +1,12 @@
+[
+  {
+    "id": "research-data",
+    "name": "Your trusted research API",
+    "description": "Replace the endpoint and recipient with a real supported x402 provider before use.",
+    "price": "0.1",
+    "kind": "x402",
+    "input": "empty",
+    "url": "https://api.example.com/paid-data",
+    "payTo": "0x0000000000000000000000000000000000000000"
+  }
+]

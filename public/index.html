@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>World Agent Wallet</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <div id="login" class="login-screen">
+      <form id="login-form" class="login-card">
+        <div class="brand-icon">w<span>·</span></div>
+        <p class="eyebrow">YOUR AGENTS. YOUR LIMITS.</p>
+        <h1>World Agent Wallet</h1>
+        <p>에이전트가 쓰는 돈을, 내가 정한 범위 안에서.</p>
+        <label for="operator-token">운영자 토큰</label
+        ><input
+          id="operator-token"
+          type="password"
+          autocomplete="off"
+          required
+          placeholder=".local/admin-token 파일의 값"
+        />
+        <button type="submit" class="primary">
+          대시보드 열기 <span>↗</span>
+        </button>
+        <p id="login-error" role="alert"></p>
+        <small>로컬 실행 · 독립 개발 프로젝트</small>
+      </form>
+    </div>
+    <div id="workspace" hidden>
+      <aside class="sidebar">
+        <a class="brand" href="#overview"
+          ><span class="brand-icon small">w<span>·</span></span
+          ><span>World Agent<br /><b>Wallet</b></span></a
+        >
+        <div class="workspace-label">CONTROL CENTER</div>
+        <nav aria-label="주 메뉴">
+          <a href="#overview" class="active">◈ <span>Overview</span></a
+          ><a href="#approvals"
+            >◎ <span>Approvals</span
+            ><span id="pending-nav" class="count">0</span></a
+          ><a href="#activity">≋ <span>Activity</span></a
+          ><a href="#agents">⌘ <span>Agents</span></a>
+        </nav>
+        <div class="sidebar-note">
+          <span class="status-dot"></span> Permissions enforced<br /><small
+            >실행 시점에 예산과 권한 확인</small
+          >
+        </div>
+        <button id="logout" class="text-button">로그아웃 ↗</button>
+      </aside>
+      <main id="overview">
+        <header>
+          <div>
+            <p class="eyebrow">AGENT SPENDING / OVERVIEW</p>
+            <h1>Let agents work.<br /><span>Keep control.</span></h1>
+            <p class="subtitle">
+              여러 에이전트, 하나의 예산. 모든 지출을 한곳에서.
+            </p>
+          </div>
+          <div class="header-right">
+            <span id="mode" class="mode">SIMULATION</span
+            ><span id="day" class="muted"></span
+            ><button id="refresh" class="secondary">새로고침 ↻</button>
+          </div>
+        </header>
+        <div id="mode-note" class="notice"></div>
+        <div id="message" role="status" aria-live="polite" hidden></div>
+        <section class="metrics" aria-label="오늘의 예산">
+          <article class="metric main-metric">
+            <div class="metric-label">오늘 남은 예산 <span>↗</span></div>
+            <div class="metric-value">
+              <span id="remaining">5.00</span><small>USDC</small>
+            </div>
+            <div class="budget-track"><div id="budget-fill"></div></div>
+            <div class="metric-bottom">
+              <span>지출·예약 <b id="committed">0</b></span
+              ><span>일일 한도 <b id="daily">5</b></span>
+            </div>
+          </article>
+          <article class="metric">
+            <div class="metric-label">자동 결제 한도 <span>⚙</span></div>
+            <div class="metric-value">
+              <span id="auto">1</span><small>USDC / 건</small>
+            </div>
+            <p>한도를 넘는 요청은<br />사용자의 승인을 기다립니다.</p>
+          </article>
+          <article class="metric">
+            <div class="metric-label">승인 대기 <span>◎</span></div>
+            <div class="metric-value">
+              <span id="pending">0</span><small>requests</small>
+            </div>
+            <p>금액·서비스·작업을 확인하고<br />실행 여부를 결정하세요.</p>
+          </article>
+        </section>
+        <div class="grid">
+          <section id="approvals" class="panel">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">HUMAN IN THE LOOP</p>
+                <h2>승인 요청</h2>
+              </div>
+              <span class="pill">사용자 확인</span>
+            </div>
+            <div id="approval-list"></div>
+          </section>
+          <section class="panel settings-panel">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">SPENDING POLICY</p>
+                <h2>지출 규칙</h2>
+              </div>
+              <span class="mini-icon">⌘</span>
+            </div>
+            <form id="policy-form">
+              <label for="daily-limit">하루 전체 한도 <span>USDC</span></label
+              ><input
+                id="daily-limit"
+                type="text"
+                inputmode="decimal"
+                required
+              /><label for="auto-limit"
+                >건당 자동 결제 한도 <span>USDC</span></label
+              ><input
+                id="auto-limit"
+                type="text"
+                inputmode="decimal"
+                required
+              />
+              <p class="hint">
+                모든 에이전트가 이 한도를 공유합니다. 규칙을 변경하면 기존
+                미실행 요청을 새로 생성해야 합니다.
+              </p>
+              <button class="secondary wide">규칙 저장</button>
+            </form>
+          </section>
+        </div>
+        <section id="activity" class="panel activity-panel">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">EVERY REQUEST, ACCOUNTED FOR</p>
+              <h2>최근 활동</h2>
+            </div>
+            <span id="activity-count" class="muted"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>서비스</th>
+                  <th>에이전트</th>
+                  <th>금액</th>
+                  <th>상태</th>
+                  <th>시각</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="activity-body"></tbody>
+            </table>
+          </div>
+          <div id="activity-empty" class="empty" hidden>
+            아직 요청이 없습니다. 아래 데모로 첫 번째 결제를 만들어 보세요.
+          </div>
+        </section>
+        <div class="grid">
+          <section id="demo-panel" class="panel">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">TRY THE WORKFLOW</p>
+                <h2>에이전트 요청 체험</h2>
+              </div>
+              <span class="pill mint">실제 과금 없음</span>
+            </div>
+            <form id="demo-form">
+              <div class="form-row">
+                <div>
+                  <label for="demo-agent">에이전트</label
+                  ><select id="demo-agent"></select>
+                </div>
+                <div>
+                  <label for="demo-service">사용할 서비스</label
+                  ><select id="demo-service"></select>
+                </div>
+              </div>
+              <p id="service-description" class="hint"></p>
+              <label for="demo-input">입력 데이터 <span>JSON</span></label
+              ><textarea id="demo-input" rows="3">{}</textarea
+              ><button class="primary wide">요청 생성 <span>→</span></button>
+            </form>
+          </section>
+          <section id="agents" class="panel">
+            <div class="section-title">
+              <div>
+                <p class="eyebrow">CONNECTED AGENTS</p>
+                <h2>연결된 에이전트</h2>
+              </div>
+              <span class="mini-icon">◈</span>
+            </div>
+            <div id="agent-list"></div>
+            <form id="agent-form" class="inline-form">
+              <input
+                id="agent-name"
+                aria-label="새 에이전트 이름"
+                placeholder="새 에이전트 이름"
+                required
+                maxlength="60"
+              /><button class="secondary">추가</button>
+            </form>
+            <div id="new-credential" hidden>
+              <p class="hint">
+                토큰은 한 번만 표시됩니다. 에이전트 설정에 저장하세요.
+              </p>
+              <textarea
+                id="credential-value"
+                readonly
+                rows="3"
+                aria-label="새 에이전트 자격 증명"
+              ></textarea>
+            </div>
+          </section>
+        </div>
+        <section class="identity-bar">
+          <div>
+            <span class="identity-icon">◎</span>
+            <div>
+              <h3>World ID</h3>
+              <p id="world-status">인간 인증 연결 상태</p>
+            </div>
+          </div>
+          <button id="world-enroll" class="secondary">World ID 연결 ↗</button
+          ><a
+            id="world-connect"
+            class="secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+            hidden
+            >World ID 앱에서 확인 ↗</a
+          >
+        </section>
+        <footer>
+          <span>World Agent Wallet · v0.1.0</span
+          ><span>Independent integration. Not affiliated with World.</span>
+        </footer>
+      </main>
+    </div>
+    <dialog id="detail-dialog">
+      <div class="section-title">
+        <h2>요청 상세</h2>
+        <button id="close-detail" class="secondary">닫기</button>
+      </div>
+      <pre id="detail-content"></pre>
+    </dialog>
+  </body>
+</html>
