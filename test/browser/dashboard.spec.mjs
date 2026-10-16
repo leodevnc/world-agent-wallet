@@ -106,3 +106,42 @@ test("English policy feedback and narrow-screen controls remain usable", async (
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.locator("#login")).toBeVisible();
 });
+
+test("neutral theme preserves keyboard access and mobile navigation", async ({
+  page,
+}) => {
+  await login(page);
+  await page.reload();
+  await expect(page.locator("#workspace")).toBeVisible();
+  await page.keyboard.press("Tab");
+  await expect(page.locator(":focus")).toHaveText("Skip to content");
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#overview")).toBeFocused();
+  await expect(page.locator("html")).toHaveCSS(
+    "background-color",
+    "rgb(255, 255, 255)",
+  );
+  await expect(page.locator("#demo-form .primary")).toHaveCSS(
+    "background-color",
+    "rgb(32, 32, 32)",
+  );
+  await expect(page.locator(".sidebar")).toHaveCSS(
+    "background-color",
+    "rgb(247, 247, 247)",
+  );
+  await expect(
+    page.getByRole("region", { name: "Recent activity table" }),
+  ).toHaveAttribute("tabindex", "0");
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await expect(
+      page.getByRole("navigation", { name: "Main navigation" }),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Refresh" })).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+      )
+      .toBe(true);
+  }
+});

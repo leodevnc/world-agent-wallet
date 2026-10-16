@@ -1,5 +1,15 @@
 # Validation record
 
+## Neutral UI refresh — 2026-10-16
+
+- `npm test`: 46 passed; `npm run test:e2e`: 3 passed.
+- `npm run check` and `npm run build`: passed on Linux Node.js 24.19.0.
+- Added assertions for neutral theme colors, keyboard skip navigation, visible mobile navigation and refresh, and the focusable activity table.
+- Rechecked 320/390/768/1440px layouts and refreshed the desktop/mobile screenshots.
+- Existing demo payment, approval, rejection and policy workflows still pass. No backend or adapter code changed.
+
+See [ui-design.md](ui-design.md) for design decisions, tradeoffs and the limits of these checks.
+
 ## English-default update — 2026-10-16
 
 Validated with Linux Node.js 24.19.0 and Playwright 1.63.0.
