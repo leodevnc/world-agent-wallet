@@ -8,8 +8,6 @@ An independent project, not an official World product.
 
 ![Operator dashboard](docs/dashboard.png)
 
-The dashboard uses a restrained, OpenAI-inspired visual direction: neutral surfaces, black primary actions, readable status labels and a persistent navigation structure across desktop and mobile. It retains its own identity and has no affiliation with OpenAI. See [UI design](docs/ui-design.md) for the presentation choices and verification scope.
-
 ## v0.1.0 scope
 
 The project includes a **local MVP that runs without API keys** and **adapters for World and x402 integration**. The server enforces operator-defined limits; agents cannot approve requests or change those limits.
@@ -112,7 +110,7 @@ npm run build
 npm run demo
 ```
 
-Tests do not use real funds. They cover concurrent spending, approval tampering, wrong-person approvals, duplicate payments, agent-scoped access, policy changes, expiry, restarts, World ID response validation, x402 SDK signing and the complete MCP workflow. See the [validation record](docs/validation.md) for evidence and remaining checks.
+Tests do not use real funds. They cover concurrent spending, approval tampering, wrong-person approvals, duplicate payments, agent-scoped access, policy changes, expiry, restarts, World ID response validation, x402 SDK signing and the complete MCP workflow. See [testing and integration limits](docs/validation.md) for the test contracts and remaining checks.
 
 For the local dashboard browser checks, install Chromium with `npx playwright install chromium`, then run `npm run test:e2e`. These checks use an in-memory demo ledger and block non-loopback browser requests.
 
