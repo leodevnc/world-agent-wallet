@@ -1,5 +1,29 @@
 # Validation record
 
+## English-default update — 2026-10-16
+
+Validated with Linux Node.js 24.19.0 and Playwright 1.63.0.
+
+- English UI labels, accessibility names, status messages, README and integration instructions.
+- English display-time locale; the budget's Asia/Seoul date boundary and user-provided names remain unchanged.
+- `npm run check`, `npm run build` and `npm run demo`: passed.
+- `npm test`: 46 passed, including English-default and original-language name regression checks.
+- `npm run test:e2e`: 2 passed. Covers operator sign-in, simulated automatic payment, approval, rejection, request details, policy feedback and sign-out.
+- Browser layouts checked at 320, 390, 768 and 1440 pixels without document overflow. The activity table retains horizontal scrolling on narrow screens.
+- Updated `dashboard.png` and `dashboard-mobile.png` show the English interface with a pending demo approval.
+- The main browser workflow observed no page errors or external requests. Non-loopback browser requests were blocked. Tests use an in-memory demo ledger and temporary test credentials, never actual account credentials or funds.
+
+Reproduce browser checks after `npm ci` and `npm run build`:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Linux browser runners need Chromium's system libraries. The tests start their own loopback server on an available port; no running gateway or environment file is needed. English defaults do not claim full localization or accessibility compliance. Live World ID and settlement validation remain outside this update.
+
+## Initial validation — 2026-10-10
+
 Validated on 2026-10-10 using Node.js 24.19.0.
 
 | Check                | Result                                                                                                                                                      |

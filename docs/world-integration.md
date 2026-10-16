@@ -17,7 +17,7 @@ WORLD_ACTION=agent-wallet-owner
 WORLD_ENVIRONMENT=staging
 ```
 
-Restart the gateway. Click **World ID 연결**, then open the generated link in the matching World ID environment. The browser uses IDKit 4's `ProofOfHuman` flow. Staging/sandbox app availability is controlled by World; the code supports `staging` and `production`, not sandbox proofs. Verification is performed by the official backend, not trusted from the browser callback.
+Restart the gateway. Click **Connect World ID**, then open the generated link in the matching World ID environment. The browser uses IDKit 4's `ProofOfHuman` flow. Staging/sandbox app availability is controlled by World; the code supports `staging` and `production`, not sandbox proofs. Verification is performed by the official backend, not trusted from the browser callback.
 
 After enrollment, approvals require that same verified human. The operator token remains mandatory. Environment, RP or action changes require restoring the original configuration or using a fresh data directory.
 

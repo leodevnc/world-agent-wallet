@@ -4,14 +4,14 @@ let state;
 let policyLoaded = false;
 let polling;
 const labels = {
-  awaiting_approval: "승인 대기",
-  ready: "실행 준비",
-  executing: "실행 중",
-  succeeded: "완료",
-  rejected: "거절됨",
-  failed: "미전송 실패",
-  uncertain: "확인 필요",
-  charged_unconfirmed: "최대 금액 기록",
+  awaiting_approval: "Awaiting approval",
+  ready: "Ready",
+  executing: "Executing",
+  succeeded: "Succeeded",
+  rejected: "Rejected",
+  failed: "Failed before submission",
+  uncertain: "Needs reconciliation",
+  charged_unconfirmed: "Maximum charge recorded",
 };
 const node = (tag, text, className) => {
   const e = document.createElement(tag);
@@ -29,7 +29,7 @@ async function api(path, body) {
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   const data = await r.json();
-  if (!r.ok) throw new Error(data.error?.message || "요청에 실패했습니다.");
+  if (!r.ok) throw new Error(data.error?.message || "Request failed.");
   return data;
 }
 function message(text) {
@@ -62,7 +62,7 @@ async function worldProof(purpose, operationId) {
     ...(operationId ? { operation_id: operationId } : {}),
   });
   const { verifyHuman } = await import("/world-id.bundle.js");
-  message("World ID 앱에서 요청을 확인해 주세요.");
+  message("Confirm the request in the World ID app.");
   const proof = await verifyHuman(c, (url) => {
     const a = $("world-connect");
     a.href = url;
@@ -70,7 +70,7 @@ async function worldProof(purpose, operationId) {
   });
   const r = await api("world/verify", { challenge_id: c.id, proof });
   $("world-connect").hidden = true;
-  message("World ID 확인이 완료되었습니다.");
+  message("World ID verification completed.");
   return r;
 }
 async function approve(op) {
@@ -82,7 +82,7 @@ async function approve(op) {
     });
   if (state.budget.mode === "demo")
     await api("demo/execute", { operation_id: op.id });
-  message("승인이 완료되었습니다.");
+  message("Approval completed.");
 }
 function render() {
   const b = state.budget;
@@ -96,8 +96,8 @@ function render() {
   $("mode").textContent = demo ? "SIMULATION" : "LIVE · WORLD CHAIN";
   $("day").textContent = b.day + " · " + b.timezone;
   $("mode-note").textContent = demo
-    ? "데모 모드 · USDC 금액은 시뮬레이션입니다. 실제 자금 이동 없이 승인·한도·영수증 흐름을 확인하세요."
-    : "실결제 모드 · 등록된 World Chain 지갑에서 승인된 서비스의 USDC 결제를 실행합니다.";
+    ? "Demo mode · USDC amounts are simulated. Explore approvals, limits and receipts without moving real funds."
+    : "Live mode · Executes USDC payments for approved services from the registered World Chain wallet.";
   for (const [id, val] of [
     ["remaining", b.remaining],
     ["daily", b.dailyLimit],
@@ -120,8 +120,8 @@ function render() {
     const empty = node("div", undefined, "empty");
     empty.append(
       node("span", "✓", "empty-mark"),
-      node("span", "지금은 승인할 요청이 없습니다."),
-      node("span", "에이전트는 정해진 한도 안에서 작업합니다."),
+      node("span", "No requests awaiting approval."),
+      node("span", "Agents operate within the configured limits."),
     );
     approvals.append(empty);
   }
@@ -133,9 +133,9 @@ function render() {
       node("span", op.amount + " USDC", "approval-amount"),
     );
     const buttons = node("div", undefined, "approval-buttons");
-    const yes = node("button", "승인하고 계속", "primary");
-    const no = node("button", "거절", "secondary");
-    const inspect = node("button", "상세", "secondary");
+    const yes = node("button", "Approve and continue", "primary");
+    const no = node("button", "Reject", "secondary");
+    const inspect = node("button", "Details", "secondary");
     action(yes, () => approve(op));
     action(no, () => api("operations/" + op.id + "/reject", {}));
     inspect.onclick = () => detail(op);
@@ -145,9 +145,8 @@ function render() {
       node(
         "p",
         agentName(op.agentId) +
-          " · " +
-          new Date(op.expiresAt).toLocaleTimeString("ko-KR") +
-          "까지 유효",
+          " · Valid until " +
+          new Date(op.expiresAt).toLocaleTimeString("en-US"),
         "approval-meta",
       ),
       buttons,
@@ -174,11 +173,11 @@ function render() {
     status.append(badge);
     const td = node("td");
     const view = node("button", "↗", "detail-button");
-    view.setAttribute("aria-label", op.serviceName + " 상세");
+    view.setAttribute("aria-label", op.serviceName + " details");
     view.onclick = () => detail(op);
     td.append(view);
     if (op.status === "uncertain") {
-      const ack = node("button", "최대 금액 기록", "secondary");
+      const ack = node("button", "Record maximum charge", "secondary");
       action(ack, () => api("operations/" + op.id + "/acknowledge", {}));
       td.append(ack);
     }
@@ -189,7 +188,7 @@ function render() {
       status,
       node(
         "td",
-        new Date(op.createdAt).toLocaleTimeString("ko-KR", {
+        new Date(op.createdAt).toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
         }),
@@ -207,11 +206,11 @@ function render() {
       node("div", a.name, "agent-name"),
       node(
         "div",
-        a.revoked ? "권한 회수됨" : a.id.slice(0, 8) + " · active",
+        a.revoked ? "Access revoked" : a.id.slice(0, 8) + " · active",
         "agent-id",
       ),
     );
-    const revoke = node("button", a.revoked ? "비활성" : "권한 회수");
+    const revoke = node("button", a.revoked ? "Inactive" : "Revoke access");
     revoke.disabled = !!a.revoked;
     action(revoke, () => api("agents/" + a.id + "/revoke", {}));
     row.append(node("span", "◈", "agent-icon"), info, revoke);
@@ -239,14 +238,14 @@ function render() {
   }
   $("demo-panel").hidden = !demo;
   $("world-status").textContent = state.world.enrolled
-    ? "인간 인증 연결됨 · " + state.world.environment
+    ? "Human verification connected · " + state.world.environment
     : state.world.configured
-      ? "World ID를 연결해 승인자를 확인하세요."
-      : "미연결 · 데모는 운영자 토큰으로 승인합니다. 설정 후 World ID를 연결할 수 있습니다.";
+      ? "Connect World ID to verify the approver."
+      : "Not connected · Demo approvals use the operator token. Configure World ID to connect it.";
   $("world-enroll").disabled = !state.world.configured || state.world.enrolled;
   $("world-enroll").textContent = state.world.enrolled
-    ? "연결 완료 ✓"
-    : "World ID 연결 ↗";
+    ? "Connected ✓"
+    : "Connect World ID ↗";
 }
 async function refresh() {
   state = await api("state");
@@ -286,7 +285,9 @@ $("policy-form").addEventListener("submit", async (e) => {
       daily_limit: $("daily-limit").value,
       auto_limit: $("auto-limit").value,
     });
-    message("지출 규칙이 저장되었습니다. 미실행 요청은 다시 생성해 주세요.");
+    message(
+      "Spending policy saved. Recreate requests that have not been executed.",
+    );
     await refresh();
   } catch (error) {
     message(error.message);
@@ -318,8 +319,8 @@ $("demo-form").addEventListener("submit", async (e) => {
     });
     message(
       op.status === "awaiting_approval"
-        ? "승인 요청이 생성되었습니다. 위의 승인 요청에서 내용을 확인하세요."
-        : "요청 완료 · " +
+        ? "Approval requested. Review the details in Approval requests above."
+        : "Request completed · " +
             op.amount +
             " USDC · " +
             (labels[op.status] || op.status),

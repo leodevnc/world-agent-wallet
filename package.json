@@ -13,6 +13,7 @@
     "mcp": "node src/mcp.mjs",
     "demo": "node scripts/demo.mjs",
     "test": "node --test test/*.test.mjs",
+    "test:e2e": "playwright test",
     "build": "esbuild web/world-id.js --bundle --format=esm --outfile=public/world-id.bundle.js",
     "check": "node scripts/check.mjs",
     "format": "prettier --write .",
@@ -29,6 +30,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "esbuild": "0.28.2",
     "prettier": "3.9.10"
   }
